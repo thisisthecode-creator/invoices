@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Professional Invoice Generator</title>
+    <meta name="description" content="Modern, professional invoice generator with live preview and PDF export" />
+    <meta name="color-scheme" content="light" />
+    <link rel="preconnect" href="https://rsms.me" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter-display.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">📄</div>
+          <div class="titles">
+            <h1>Professional Invoice Generator</h1>
+            <p class="subtitle">Create professional invoices with live preview</p>
+          </div>
+        </div>
+        <div class="actions">
+          <div class="language-selector">
+            <label for="language-select">🌐 Language:</label>
+            <select id="language-select" class="btn">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <button id="btn-print" class="btn primary">
+            <span>📄</span>
+            <span id="print-text">Export as PDF</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="panel form-panel" aria-label="Eingabeformular">
+          <div class="section">
+            <h2 id="invoice-details-title">📋 Invoice Details</h2>
+            <div class="grid">
+              <label>
+                <span id="invoice-number-label">Invoice Number</span>
+                <input id="invoice-number" type="text" value="INV-2025-1099" placeholder="INV-2025-001" />
+              </label>
+              <label>
+                <span id="invoice-date-label">Invoice Date</span>
+                <input id="invoice-date" type="date" />
+              </label>
+              <label>
+                <span id="payment-terms-label">Payment Terms (Days)</span>
+                <input id="invoice-terms" type="number" min="0" value="14" />
+              </label>
+              <label>
+                <span id="currency-label">Currency</span>
+                <input id="invoice-currency" type="text" value="EUR" />
+              </label>
+            </div>
+          </div>
+
+          <div class="section two-col" id="from-to-section" style="display: grid;">
+            <div id="from-section">
+              <h3 id="from-title">🏢 From (Your Company)</h3>
+              <label><span id="company-name-label">Company Name</span><input id="from-name" type="text" value="BS Travel LLC" placeholder="Your Company GmbH" /></label>
+              <label><span id="address-label">Address</span><textarea id="from-address" rows="3" placeholder="Street 1\n12345 City\nCountry">131 Continental Dr, Suite 305\nNewark 19713, New Castle\nDelaware, USA</textarea></label>
+              <div class="grid">
+                <label><span>IBAN</span><input id="from-iban" type="text" value="BE63 9054 8898 6808" placeholder="BE63 9054 8898 6808" /></label>
+                <label><span>BIC</span><input id="from-bic" type="text" value="TRWIBEB1XXX" placeholder="TRWIBEB1XXX" /></label>
+              </div>
+              <label><span id="tax-id-label">EIN</span><input id="from-vat" type="text" value="35-2903352" placeholder="35-2903352" /></label>
+              <label><span id="email-label">Email</span><input id="from-email" type="email" value="office@benefitsystems.io" placeholder="billing@yourcompany.com" /></label>
+              <label><span id="phone-label">Phone</span><input id="from-phone" type="tel" value="+15052344946" placeholder="+49 123 456789" /></label>
+            </div>
+            <div id="to-section">
+              <h3 id="to-title">👤 To (Customer)</h3>
+              <label><span id="customer-name-label">Customer Name</span><input id="to-name" type="text" placeholder="Customer AG" /></label>
+              <label><span id="customer-address-label">Address</span><textarea id="to-address" rows="3" placeholder="Street 2\n54321 Customer City\nCountry"></textarea></label>
+              <label><span id="customer-tax-id-label">Tax ID</span><input id="to-vat" type="text" placeholder="DE987654321" /></label>
+              <label><span id="customer-id-label">Customer ID</span><input id="to-customer-id" type="text" placeholder="CUST-0001" /></label>
+              <label><span id="customer-email-label">Email (optional)</span><input id="to-email" type="email" placeholder="customer@example.com" /></label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 id="line-items-title">📦 Line Items</h3>
+            <div class="items-head">
+              <div id="description-header">Description</div>
+              <div id="qty-header">Qty</div>
+              <div id="unit-header">Unit</div>
+              <div id="price-header">Price</div>
+              <div id="tax-header">Tax %</div>
+              <div></div>
+            </div>
+            <div id="items" class="items"></div>
+            <div class="items-actions">
+              <button id="add-item" class="btn">
+                <span>➕</span>
+                <span id="add-item-text">Add Item</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="section">
+            <label><span id="notes-label">Notes</span><textarea id="invoice-notes" rows="3" placeholder="Thank you for your business."></textarea></label>
+          </div>
+
+          <div class="section">
+            <h3 id="legal-notices-title">⚖️ Legal Notices</h3>
+            <div class="legal-notice">
+              <label class="checkbox-label">
+                <input type="checkbox" id="show-reverse-charge" checked />
+                <span>Show Reverse-Charge Notice (UStG §13b)</span>
+              </label>
+              <div class="notice-text" id="reverse-charge-text">
+                <strong>Hinweis:</strong> UStG §13b gilt – die Umsatzsteuer ist vom Leistungsempfänger zu entrichten (Reverse-Charge-Verfahren).
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 id="payment-methods-title">💳 Payment Methods</h3>
+            <p class="helper-text">Add payment links that will appear as buttons on the invoice. Only buttons with URLs will be shown.</p>
+            
+            <div class="payment-methods-grid">
+              <div class="payment-method-item">
+                <label>
+                  <span class="payment-label">💰 PayPal Link (optional)</span>
+                  <input id="paypal-link" type="url" placeholder="https://paypal.me/yourcompany" />
+                </label>
+              </div>
+              
+              <div class="payment-method-item">
+                <label>
+                  <span class="payment-label" id="card-payment-label">💳 Card Payment Link (optional)</span>
+                  <input id="card-link" type="url" placeholder="https://your-domain.com/pay/card" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3 id="logo-title">🎨 Logo</h3>
+            <div class="logo-uploader">
+              <input id="logo-input" type="file" accept="image/*" />
+              <small id="logo-upload-text">Optional: Upload PNG/SVG. Placeholder will be used otherwise.</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel preview-panel" aria-label="Rechnungsvorschau">
+          <div id="invoice" class="invoice A4">
+            <header class="invoice-header">
+              <div class="invoice-logo" id="invoice-logo" aria-label="Logo">
+                <img src="BenefitSystems.png" alt="BenefitSystems Logo" style="max-width: 120px; max-height: 80px;" />
+              </div>
+              <div class="invoice-meta">
+                <div><strong id="pv-invoice-title">Rechnung</strong></div>
+                <div><span id="pv-number">INV-2025-1099</span></div>
+                <div id="pv-date-label">Datum: <span id="pv-date">—</span></div>
+                <div id="pv-due-label">Fällig am: <span id="pv-due">—</span></div>
+              </div>
+            </header>
+
+            <section class="addresses" id="pv-addresses" style="display: grid;">
+              <div id="pv-from-section" style="display: block;">
+                <h4>Absender</h4>
+                <div id="pv-from-name">BS Travel LLC</div>
+                <div id="pv-from-vat-container" style="display: none;">EIN: <span id="pv-from-vat"></span></div>
+                <div id="pv-from-address">131 Continental Dr, Suite 305\nNewark 19713, New Castle\nDelaware, USA</div>
+                <div id="pv-from-email-container" style="display: none;"><a id="pv-from-email" href="mailto:office@benefitsystems.io"></a></div>
+                <div id="pv-from-phone-container" style="display: none;"><a id="pv-from-phone" href="tel:+15052344946"></a></div>
+              </div>
+              <div id="pv-to-section" style="display: block;">
+                <h4>Empfänger</h4>
+                <div id="pv-to-name"></div>
+                <div id="pv-to-vat-container" style="display: none;">Tax ID: <span id="pv-to-vat"></span></div>
+                <div id="pv-to-address"></div>
+                <div id="pv-to-customer-id-container" style="display: none;">Customer ID: <span id="pv-to-customer-id"></span></div>
+              </div>
+            </section>
+
+            <section class="items-table">
+              <div class="tbl head">
+                <div>Beschreibung</div>
+                <div>Menge</div>
+                <div>Einheit</div>
+                <div>Preis</div>
+                <div>Steuer</div>
+                <div>Summe</div>
+              </div>
+              <div id="pv-rows"></div>
+            </section>
+
+            <section class="totals">
+              <div class="left">
+                <div class="note" id="pv-notes" style="display: none;">Danke für Ihren Auftrag.</div>
+                <div class="payment">
+                  <div id="payment-info" class="payment-info" style="display: none;">
+                    <span class="payment-info-icon">💡</span>
+                    <span id="payment-info-text">Sie können diese Rechnung direkt über die folgenden Zahlungsmethoden begleichen:</span>
+                  </div>
+                  <div id="payment-buttons" class="payment-buttons">
+                    <!-- Payment buttons will be dynamically inserted here -->
+                  </div>
+                </div>
+              </div>
+              <div class="right">
+                <div class="sumline"><span id="pv-subtotal-label">Subtotal</span><span id="pv-subtotal">0,00 €</span></div>
+                <div class="sumline"><span id="pv-tax-label">Tax</span><span id="pv-tax">0,00 €</span></div>
+                <div class="sumline total"><span id="pv-total-label">Total</span><span id="pv-total">0,00 €</span></div>
+              </div>
+            </section>
+
+            <div id="pv-reverse-charge" class="reverse-charge-notice" style="display: block;">
+              <div class="notice-box" id="pv-reverse-charge-text">
+                <strong>Hinweis:</strong> UStG §13b gilt – die Umsatzsteuer ist vom Leistungsempfänger zu entrichten (Reverse-Charge-Verfahren).
+              </div>
+            </div>
+
+            <footer class="footer">
+              <div class="muted small" id="pv-bank-details" style="display: none;">Account Name: <span id="pv-from-name-bank">BS Travel LLC</span> • IBAN: <span id="pv-from-iban"></span> • BIC: <span id="pv-from-bic"></span></div>
+            </footer>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>
+
+
