@@ -342,15 +342,24 @@ textarea {
   border-radius: var(--radius-sm);
 }
 
-.item-row input {
+.item-row input,
+.item-row textarea {
   margin: 0;
   box-shadow: none;
   border: 1px solid var(--gray-200);
   padding: var(--space-2);
   font-size: 0.8125rem;
+  font-family: var(--font-sans);
 }
 
-.item-row input:focus {
+.item-row textarea {
+  resize: vertical;
+  min-height: 45px;
+  line-height: 1.4;
+}
+
+.item-row input:focus,
+.item-row textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px var(--primary-light);
 }
@@ -488,6 +497,13 @@ textarea {
   padding: var(--space-4);
   border-bottom: 1px solid var(--gray-200);
   font-size: 0.875rem;
+  align-items: start;
+}
+
+.row > div:first-child {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .row:last-child {
@@ -612,6 +628,11 @@ textarea {
 .footer .small {
   font-size: 0.75rem;
   margin-bottom: var(--space-4);
+  line-height: 1.6;
+}
+
+.footer .small > div {
+  margin-bottom: 2px;
 }
 
 .thank-you {
@@ -884,6 +905,13 @@ textarea {
   .tbl.head, .row {
     font-size: 9pt !important;
     padding: 6px 8px !important;
+    align-items: start !important;
+  }
+  
+  .row > div:first-child {
+    white-space: pre-wrap !important;
+    line-height: 1.4 !important;
+    word-break: break-word !important;
   }
   
   .items-header {
@@ -914,7 +942,7 @@ textarea {
     color: black !important;
   }
   
-  .payment-info {
+  .payment-info[style*="display: block"] {
     display: block !important;
     background: #f0f9ff !important;
     border: 1px solid #2563eb !important;
@@ -925,16 +953,24 @@ textarea {
     color: #1e293b !important;
   }
   
+  .payment-info[style*="display: none"] {
+    display: none !important;
+  }
+  
   .payment-info-icon {
     font-size: 10pt !important;
     margin-right: 4px !important;
   }
   
-  .payment-buttons {
+  .payment-buttons[style*="display: flex"] {
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 6px !important;
     margin-top: 8px !important;
+  }
+  
+  .payment-buttons[style*="display: none"] {
+    display: none !important;
   }
   
   .payment-button {
@@ -987,6 +1023,15 @@ textarea {
     border-top: 1px solid #ddd !important;
     margin-top: 15px !important;
     padding-top: 10px !important;
+  }
+  
+  .footer .small {
+    font-size: 8pt !important;
+    line-height: 1.4 !important;
+  }
+  
+  .footer .small > div {
+    margin-bottom: 2px !important;
     font-size: 8pt !important;
   }
   

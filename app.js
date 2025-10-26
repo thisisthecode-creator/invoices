@@ -307,20 +307,20 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
     
-    // Show/hide payment section based on whether there are buttons
+    // Show/hide payment section AND info box based on whether there are buttons
     const paymentInfo = $('payment-info');
     if (hasButtons) {
       container.style.display = 'flex';
       if (paymentInfo) {
         paymentInfo.style.display = 'block';
       }
-      console.log('✓ Payment buttons container shown (display: flex)');
+      console.log('✓ Payment buttons container and info shown');
     } else {
       container.style.display = 'none';
       if (paymentInfo) {
         paymentInfo.style.display = 'none';
       }
-      console.log('✗ Payment buttons container hidden (no buttons)');
+      console.log('✗ Payment buttons container and info hidden (no buttons)');
     }
     
     console.log('=== Payment buttons update complete. Total buttons:', container.children.length, '===');
@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const row = document.createElement('div');
     row.className = 'item-row';
     row.innerHTML = `
-      <input class="i-desc" placeholder="Position / Beschreibung" value="${data.description || ''}">
+      <textarea class="i-desc" placeholder="Position / Beschreibung" rows="2">${data.description || ''}</textarea>
       <input class="i-qty" type="number" min="0" step="1" value="${data.quantity ?? 1}">
       <input class="i-unit" placeholder="Stk" value="${data.unit || 'Stk'}">
       <input class="i-price" type="number" min="0" step="0.01" value="${data.price ?? 0}">
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
     itemsContainer.appendChild(row);
     
     // Add event listeners to new row
-    const inputs = row.querySelectorAll('input');
+    const inputs = row.querySelectorAll('input, textarea');
     inputs.forEach(input => {
       input.addEventListener('input', updatePreview);
       input.addEventListener('change', updatePreview);
