@@ -7,7 +7,7 @@ Ein moderner, statischer Rechnungs‑Generator mit Live‑Vorschau, Logo‑Uploa
 - Linkes Formular ausfüllen, Positionen hinzufügen, Steuern/Preise anpassen.
 - Optional Logo hochladen.
 - IBAN, BIC und Zahlungslinks eintragen.
-- „Als PDF drucken“ anklicken und als PDF speichern.
+- „Als PDF drucken" anklicken und als PDF speichern.
 
 ### Features
 - Modernes UI, dunkles Eingabepanel + helle, druckfertige Rechnung
@@ -25,6 +25,4 @@ Ein moderner, statischer Rechnungs‑Generator mit Live‑Vorschau, Logo‑Uploa
 - Struktur/Markup: `index.html`
 
 ### Hinweis
-Dies ist kein steuerlicher Rat. Bitte lokale Anforderungen (z. B. GoBD, Pflichtangaben) prüfen und ggf. ergänzen.
-
-
+Dies ist kein steuerlicher Rat. Bitte lokale Anforderungen (z. B. GoBD, Pflichtangaben) prüfen und ggf. ergänzen.
