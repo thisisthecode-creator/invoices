@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const bankDetailsElement = $('pv-bank-details');
       
       if (ibanValue && ibanValue.trim() !== '' && bicValue && bicValue.trim() !== '') {
-        $('pv-from-name-bank').textContent = $('from-name').value || 'BS Travel LLC';
+        $('pv-from-name-bank').textContent = $('from-name').value || 'AMACON LLC';
         $('pv-from-iban').textContent = ibanValue;
         $('pv-from-bic').textContent = bicValue;
         bankDetailsElement.style.display = 'block';
@@ -695,13 +695,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     $('invoice-date').value = today;
     
-    // Set company data
-    $('from-name').value = 'BS Travel LLC';
-    $('from-address').value = '131 Continental Dr, Suite 305\nNewark 19713, New Castle\nDelaware, USA';
-    $('from-iban').value = 'BE63 9054 8898 6808';
+    // Logo: always use BenefitLogo2.png (top left)
+    const logoContainer = $('invoice-logo');
+    if (logoContainer) {
+      logoContainer.innerHTML = '';
+      const logoImg = document.createElement('img');
+      logoImg.src = 'BenefitLogo2.png';
+      logoImg.alt = 'Logo';
+      logoImg.style.maxWidth = '120px';
+      logoImg.style.maxHeight = '80px';
+      logoContainer.appendChild(logoImg);
+    }
+    
+    // Set company data (Absender preset)
+    $('from-name').value = 'AMACON LLC';
+    $('from-address').value = '4300 Ridgecrest Drive SE\n87124 Rio Rancho, NM\nUSA';
+    $('from-iban').value = 'BE08 9671 4938 4713';
     $('from-bic').value = 'TRWIBEB1XXX';
-    $('from-vat').value = '35-2903352';
-    $('from-email').value = 'office@benefitsystems.io';
+    $('from-vat').value = '61-1972863';
+    $('from-email').value = 'office@amacon.llc';
     $('from-phone').value = '+15052344946';
     
     // Add default item
