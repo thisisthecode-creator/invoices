@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
   
   function formatDate(date) {
     if (!date) return '—';
-    return new Date(date).toLocaleDateString('de-DE');
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}.${month}.${year}`;
   }
   
   function addDays(date, days) {
@@ -195,6 +199,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Reverse charge notice
     updateReverseChargeNotice();
+
+    // Totals labels according to current language
+    const subtotalLabel = $('pv-subtotal-label');
+    const taxLabel = $('pv-tax-label');
+    const totalLabel = $('pv-total-label');
+    if (subtotalLabel) subtotalLabel.textContent = texts['subtotal'] || 'Zwischensumme';
+    if (taxLabel) taxLabel.textContent = texts['tax'] || 'Steuer';
+    if (totalLabel) totalLabel.textContent = texts['total'] || 'Summe';
+
+    // Date/Due labels like in Rechnungsdetails (same label text as form)
+    const dateLabelEl = $('pv-date-label');
+    const dueLabelEl = $('pv-due-label');
+    if (dateLabelEl) dateLabelEl.textContent = texts['invoice-date-label'] || 'Datum';
+    if (dueLabelEl) dueLabelEl.textContent = (currentLang === 'de' ? 'Fällig am' : 'Due');
   }
   
   function updateItems() {
@@ -571,7 +589,7 @@ document.addEventListener('DOMContentLoaded', function() {
       'to-section-title': 'Empfänger',
       'subtotal': 'Zwischensumme',
       'tax': 'Steuer',
-      'total': 'Gesamt',
+      'total': 'Summe',
       'thank-you': 'Vielen Dank für Ihr Vertrauen.',
       'default-item': 'Dienstleistung',
       'default-unit': 'Stk',
@@ -661,24 +679,15 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('Updated tax label:', taxLabel.textContent);
     }
     if (totalLabel) {
-      totalLabel.textContent = texts['total'] || 'Gesamt';
+      totalLabel.textContent = texts['total'] || 'Summe';
       console.log('Updated total label:', totalLabel.textContent);
     }
     
-    // Update date and due labels using IDs
+    // Update date and due labels (same as Rechnungsdetails – label only; value is in pv-date / pv-due)
     const dateLabel = $('pv-date-label');
     const dueLabel = $('pv-due-label');
-    
-    if (dateLabel) {
-      const dateValue = $('pv-date').textContent;
-      dateLabel.textContent = (lang === 'de' ? 'Datum: ' : 'Date: ') + dateValue;
-      console.log('Updated date label:', dateLabel.textContent);
-    }
-    if (dueLabel) {
-      const dueValue = $('pv-due').textContent;
-      dueLabel.textContent = (lang === 'de' ? 'Fällig am: ' : 'Due: ') + dueValue;
-      console.log('Updated due label:', dueLabel.textContent);
-    }
+    if (dateLabel) dateLabel.textContent = texts['invoice-date-label'] || (lang === 'de' ? 'Datum' : 'Date');
+    if (dueLabel) dueLabel.textContent = lang === 'de' ? 'Fällig am' : 'Due';
     
     // Update invoice title using ID
     const invoiceTitle = $('pv-invoice-title');
