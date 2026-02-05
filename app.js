@@ -763,12 +763,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     $('invoice-date').value = today;
     
-    // Logo: always use BenefitLogo2.png (top left)
+    // Logo: use BenefitSystems.png (top left)
     const logoContainer = $('invoice-logo');
     if (logoContainer) {
       logoContainer.innerHTML = '';
       const logoImg = document.createElement('img');
-      logoImg.src = 'BenefitLogo2.png';
+      logoImg.src = 'BenefitSystems.png';
       logoImg.alt = 'Logo';
       logoImg.style.maxWidth = '120px';
       logoImg.style.maxHeight = '80px';
