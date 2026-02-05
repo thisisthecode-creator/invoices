@@ -16,23 +16,22 @@
     <div class="app">
       <header class="topbar">
         <div class="brand">
-          <div class="logo">📄</div>
+          <div class="logo" aria-hidden="true"></div>
           <div class="titles">
-            <h1>Professional Invoice Generator</h1>
-            <p class="subtitle">Create professional invoices with live preview</p>
+            <h1>Invoice Generator</h1>
+            <p class="subtitle">Create and export professional invoices</p>
           </div>
         </div>
         <div class="actions">
           <div class="language-selector">
-            <label for="language-select">🌐 Language:</label>
+            <label for="language-select" class="language-label">Language</label>
             <select id="language-select" class="btn">
               <option value="de">Deutsch</option>
               <option value="en">English</option>
             </select>
           </div>
-          <button id="btn-print" class="btn primary">
-            <span>📄</span>
-            <span id="print-text">Export as PDF</span>
+          <button id="btn-print" class="btn primary" type="button">
+            <span id="print-text">Export PDF</span>
           </button>
         </div>
       </header>
@@ -40,11 +39,11 @@
       <main class="layout">
         <section class="panel form-panel" aria-label="Eingabeformular">
           <div class="section">
-            <h2 id="invoice-details-title">📋 Invoice Details</h2>
+            <h2 id="invoice-details-title" class="section-title">Invoice Details</h2>
             <div class="grid">
               <label>
                 <span id="invoice-number-label">Invoice Number</span>
-                <input id="invoice-number" type="text" value="INV-2025-1099" placeholder="INV-2025-001" />
+                <input id="invoice-number" type="text" value="INV-2026-1138" placeholder="INV-2026-001" />
               </label>
               <label>
                 <span id="invoice-date-label">Invoice Date</span>
@@ -63,7 +62,7 @@
 
           <div class="section two-col" id="from-to-section" style="display: grid;">
             <div id="from-section">
-              <h3 id="from-title">🏢 From (Your Company)</h3>
+              <h3 id="from-title" class="subsection-title">From (Your Company)</h3>
               <label><span id="company-name-label">Company Name</span><input id="from-name" type="text" value="AMACON LLC" placeholder="Your Company GmbH" /></label>
               <label><span id="address-label">Address</span><textarea id="from-address" rows="3" placeholder="Street 1\n12345 City\nCountry">4300 Ridgecrest Drive SE
 87124 Rio Rancho, NM
@@ -77,7 +76,7 @@ USA</textarea></label>
               <label><span id="phone-label">Phone</span><input id="from-phone" type="tel" value="+15052344946" placeholder="+49 123 456789" /></label>
             </div>
             <div id="to-section">
-              <h3 id="to-title">👤 To (Customer)</h3>
+              <h3 id="to-title" class="subsection-title">To (Customer)</h3>
               <label><span id="customer-name-label">Customer Name</span><input id="to-name" type="text" placeholder="Customer AG" /></label>
               <label><span id="customer-address-label">Address</span><textarea id="to-address" rows="3" placeholder="Street 2\n54321 Customer City\nCountry"></textarea></label>
               <label><span id="customer-tax-id-label">Tax ID</span><input id="to-vat" type="text" placeholder="DE987654321" /></label>
@@ -87,7 +86,7 @@ USA</textarea></label>
           </div>
 
           <div class="section">
-            <h3 id="line-items-title">📦 Line Items</h3>
+            <h3 id="line-items-title" class="subsection-title">Line Items</h3>
             <div class="items-head">
               <div id="description-header">Description</div>
               <div id="qty-header">Qty</div>
@@ -98,8 +97,7 @@ USA</textarea></label>
             </div>
             <div id="items" class="items"></div>
             <div class="items-actions">
-              <button id="add-item" class="btn">
-                <span>➕</span>
+              <button id="add-item" class="btn btn-secondary" type="button">
                 <span id="add-item-text">Add Item</span>
               </button>
             </div>
@@ -110,7 +108,7 @@ USA</textarea></label>
           </div>
 
           <div class="section">
-            <h3 id="legal-notices-title">⚖️ Legal Notices</h3>
+            <h3 id="legal-notices-title" class="subsection-title">Legal Notices</h3>
             <div class="legal-notice">
               <label class="checkbox-label">
                 <input type="checkbox" id="show-reverse-charge" checked />
@@ -123,20 +121,20 @@ USA</textarea></label>
           </div>
 
           <div class="section">
-            <h3 id="payment-methods-title">💳 Payment Methods</h3>
+            <h3 id="payment-methods-title" class="subsection-title">Payment Methods</h3>
             <p class="helper-text">Add payment links that will appear as buttons on the invoice. Only buttons with URLs will be shown.</p>
             
             <div class="payment-methods-grid">
               <div class="payment-method-item">
                 <label>
-                  <span class="payment-label">💰 PayPal Link (optional)</span>
+                  <span class="payment-label">PayPal Link (optional)</span>
                   <input id="paypal-link" type="url" placeholder="https://paypal.me/yourcompany" />
                 </label>
               </div>
               
               <div class="payment-method-item">
                 <label>
-                  <span class="payment-label" id="card-payment-label">💳 Card Payment Link (optional)</span>
+                  <span class="payment-label" id="card-payment-label">Card Payment Link (optional)</span>
                   <input id="card-link" type="url" placeholder="https://your-domain.com/pay/card" />
                 </label>
               </div>
@@ -144,7 +142,7 @@ USA</textarea></label>
           </div>
 
           <div class="section">
-            <h3 id="logo-title">🎨 Logo</h3>
+            <h3 id="logo-title" class="subsection-title">Logo</h3>
             <div class="logo-uploader">
               <input id="logo-input" type="file" accept="image/*" />
               <small id="logo-upload-text">Optional: Upload PNG/SVG. Placeholder will be used otherwise.</small>
@@ -160,7 +158,7 @@ USA</textarea></label>
               </div>
               <div class="invoice-meta">
                 <div><strong id="pv-invoice-title">Rechnung</strong></div>
-                <div><span id="pv-number">INV-2025-1099</span></div>
+                <div><span id="pv-number">INV-2026-1138</span></div>
                 <div id="pv-date-label">Datum: <span id="pv-date">—</span></div>
                 <div id="pv-due-label">Fällig am: <span id="pv-due">—</span></div>
               </div>
@@ -203,7 +201,6 @@ USA</div>
                 <div class="note" id="pv-notes" style="display: none;">Danke für Ihren Auftrag.</div>
                 <div class="payment">
                   <div id="payment-info" class="payment-info" style="display: none;">
-                    <span class="payment-info-icon">💡</span>
                     <span id="payment-info-text">Sie können diese Rechnung direkt über die folgenden Zahlungsmethoden begleichen:</span>
                   </div>
                   <div id="payment-buttons" class="payment-buttons">

@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (ibanValue && ibanValue.trim() !== '' && bicValue && bicValue.trim() !== '') {
         $('pv-from-name-bank').textContent = $('from-name').value || 'AMACON LLC';
-        $('pv-from-iban').textContent = ibanValue;
+        $('pv-from-iban').textContent = ibanValue.replace(/\s/g, '');
         $('pv-from-bic').textContent = bicValue;
         bankDetailsElement.style.display = 'block';
       } else {
@@ -201,39 +201,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const itemRows = document.querySelectorAll('.item-row');
     const rowsContainer = $('pv-rows');
     rowsContainer.innerHTML = '';
-    
+
     let subtotal = 0;
     let totalTax = 0;
     const currency = $('invoice-currency').value || 'EUR';
-    
+
     itemRows.forEach(row => {
-      const desc = row.querySelector('.i-desc').value || '';
+      const descEl = row.querySelector('.i-desc');
+      const subtitleEl = row.querySelector('.i-subtitle');
+      const desc = (descEl && descEl.value) ? descEl.value.trim() : '';
+      const subtitle = (subtitleEl && subtitleEl.value) ? subtitleEl.value.trim() : '';
       const qty = Number(row.querySelector('.i-qty').value || 0);
       const unit = row.querySelector('.i-unit').value || '';
       const price = Number(row.querySelector('.i-price').value || 0);
       const tax = Number(row.querySelector('.i-tax').value || 0);
-      
+
       const lineNet = qty * price;
       const lineTax = lineNet * (tax / 100);
       subtotal += lineNet;
       totalTax += lineTax;
-      
-      const itemRow = document.createElement('div');
-      itemRow.className = 'row';
-      itemRow.innerHTML = `
-        <div>${desc}</div>
+
+      // Full-width description row
+      const descRow = document.createElement('div');
+      descRow.className = 'row row-desc';
+      descRow.innerHTML = `<div class="row-desc-cell">${escapeHtml(desc) || '—'}</div>`;
+      rowsContainer.appendChild(descRow);
+
+      // Full-width subtitle row (only if subtitle has content)
+      if (subtitle) {
+        const subRow = document.createElement('div');
+        subRow.className = 'row row-subtitle';
+        subRow.innerHTML = `<div class="row-subtitle-cell">${escapeHtml(subtitle)}</div>`;
+        rowsContainer.appendChild(subRow);
+      }
+
+      // Details row: empty | qty | unit | price | tax | total
+      const detailsRow = document.createElement('div');
+      detailsRow.className = 'row row-details';
+      detailsRow.innerHTML = `
+        <div></div>
         <div>${qty}</div>
         <div>${unit}</div>
         <div class="cell right">${formatCurrency(price, currency)}</div>
         <div class="cell right">${tax.toFixed(1)}%</div>
         <div class="cell right">${formatCurrency(lineNet + lineTax, currency)}</div>
       `;
-      rowsContainer.appendChild(itemRow);
+      rowsContainer.appendChild(detailsRow);
     });
-    
-    // Totals (without discount and shipping)
+
     const total = subtotal + totalTax;
-    
     $('pv-subtotal').textContent = formatCurrency(subtotal, currency);
     $('pv-tax').textContent = formatCurrency(totalTax, currency);
     $('pv-total').textContent = formatCurrency(total, currency);
@@ -255,14 +271,12 @@ document.addEventListener('DOMContentLoaded', function() {
       {
         id: 'paypal',
         name: 'PayPal',
-        icon: '💰',
         url: paypalInput ? paypalInput.value.trim() : '',
         class: 'paypal'
       },
       {
         id: 'card',
         name: 'Card Payment',
-        icon: '💳',
         url: cardInput ? cardInput.value.trim() : '',
         class: 'card'
       }
@@ -301,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.target = '_blank';
         button.rel = 'noreferrer noopener';
         button.className = `payment-button ${method.class}`;
-        button.innerHTML = `<span>${method.icon}</span><span>${method.name}</span>`;
+        button.textContent = method.name;
         container.appendChild(button);
         console.log(`✓ Payment button created: ${method.name} (${method.url})`);
       }
@@ -342,35 +356,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Add item row function
+  // Add item row function – description and subtitle full row, then qty/unit/price/tax
   function addItemRow(data = {}) {
+    const lang = ($('language-select') && $('language-select').value) || 'de';
+    const texts = translations[lang] || translations['de'];
+    const descPlaceholder = texts['desc-placeholder'] || 'Beschreibung';
+    const subtitlePlaceholder = texts['subtitle-placeholder'] || 'Untertitel (optional)';
+
     const itemsContainer = $('items');
     const row = document.createElement('div');
     row.className = 'item-row';
     row.innerHTML = `
-      <textarea class="i-desc" placeholder="Position / Beschreibung" rows="2">${data.description || ''}</textarea>
-      <input class="i-qty" type="number" min="0" step="1" value="${data.quantity ?? 1}">
-      <input class="i-unit" placeholder="Stk" value="${data.unit || 'Stk'}">
-      <input class="i-price" type="number" min="0" step="0.01" value="${data.price ?? 0}">
-      <input class="i-tax" type="number" min="0" max="100" step="0.1" value="${data.tax ?? 0}">
-      <button class="btn i-del" title="Entfernen">✕</button>
+      <div class="item-desc-row">
+        <textarea class="i-desc" placeholder="${escapeHtml(descPlaceholder)}" rows="2">${escapeHtml(data.description || '')}</textarea>
+      </div>
+      <div class="item-subtitle-row">
+        <input class="i-subtitle" type="text" placeholder="${escapeHtml(subtitlePlaceholder)}" value="${escapeHtml(data.subtitle || '')}" />
+      </div>
+      <div class="item-details-row">
+        <div class="item-details-spacer"></div>
+        <input class="i-qty" type="number" min="0" step="1" value="${data.quantity ?? 1}" placeholder="0">
+        <input class="i-unit" placeholder="Stk" value="${data.unit || 'Stk'}">
+        <input class="i-price" type="number" min="0" step="0.01" value="${data.price ?? 0}" placeholder="0">
+        <input class="i-tax" type="number" min="0" max="100" step="0.1" value="${data.tax ?? 0}" placeholder="0">
+        <button class="btn btn-icon i-del" type="button" title="Remove line" aria-label="Remove line">×</button>
+      </div>
     `;
-    
+
     itemsContainer.appendChild(row);
-    
-    // Add event listeners to new row
+
     const inputs = row.querySelectorAll('input, textarea');
     inputs.forEach(input => {
       input.addEventListener('input', updatePreview);
       input.addEventListener('change', updatePreview);
     });
-    
-    // Delete button
+
     row.querySelector('.i-del').addEventListener('click', () => {
       row.remove();
       updatePreview();
     });
-    
+
+    updatePreview();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  /** Parse invoice number (e.g. INV-2026-1138), add 1 to the last numeric part, update input and preview. */
+  function incrementInvoiceNumber() {
+    const input = $('invoice-number');
+    if (!input) return;
+    const value = (input.value || '').trim();
+    const match = value.match(/^(.+?)(\d+)$/);
+    if (!match) return;
+    const prefix = match[1];
+    const num = parseInt(match[2], 10);
+    const nextNum = num + 1;
+    const padded = match[2].startsWith('0') && match[2].length > 1
+      ? String(nextNum).padStart(match[2].length, '0')
+      : String(nextNum);
+    input.value = prefix + padded;
     updatePreview();
   }
   
@@ -461,8 +509,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add item button
     $('add-item').addEventListener('click', () => addItemRow());
     
-    // Print button
-    $('btn-print').addEventListener('click', () => window.print());
+    // Print / Export PDF: after dialog closes, increment invoice number
+    $('btn-print').addEventListener('click', () => {
+      window.print();
+      const onceAfterPrint = () => {
+        incrementInvoiceNumber();
+        window.removeEventListener('afterprint', onceAfterPrint);
+      };
+      window.addEventListener('afterprint', onceAfterPrint);
+    });
     
     // Logo upload
     $('logo-input').addEventListener('change', function(e) {
@@ -485,30 +540,32 @@ document.addEventListener('DOMContentLoaded', function() {
   const translations = {
     de: {
       'invoice-title': 'Rechnung',
-      'invoice-details-title': '📋 Rechnungsdetails',
+      'invoice-details-title': 'Rechnungsdetails',
       'invoice-number-label': 'Rechnungsnummer',
       'invoice-date-label': 'Datum',
       'invoice-terms-label': 'Zahlungsbedingungen',
       'invoice-currency-label': 'Währung',
-      'from-title': '🏢 Von (Ihr Unternehmen)',
+      'from-title': 'Von (Ihr Unternehmen)',
       'company-name-label': 'Firmenname',
       'address-label': 'Adresse',
       'tax-id-label': 'EIN',
       'email-label': 'E-Mail',
       'phone-label': 'Telefon',
-      'to-title': '👤 An (Kunde)',
+      'to-title': 'An (Kunde)',
       'customer-name-label': 'Kundenname',
       'customer-address-label': 'Adresse',
       'customer-id-label': 'Kunden-ID',
-      'line-items-title': '📦 Positionen',
+      'line-items-title': 'Positionen',
       'add-item-text': 'Position hinzufügen',
+      'desc-placeholder': 'Beschreibung',
+      'subtitle-placeholder': 'Untertitel (optional)',
       'notes-label': 'Notizen',
-      'legal-notices-title': '⚖️ Rechtliche Hinweise',
+      'legal-notices-title': 'Rechtliche Hinweise',
       'reverse-charge-text': 'Hinweis: UStG §13b gilt – die Umsatzsteuer ist vom Leistungsempfänger zu entrichten (Reverse-Charge-Verfahren).',
-      'payment-methods-title': '💳 Zahlungsmethoden',
-      'card-payment-label': '💳 Kartenzahlung Link (optional)',
-      'sepa-pay-label': '🏦 SEPA Zahlungs-Link (optional)',
-      'logo-title': '🎨 Logo',
+      'payment-methods-title': 'Zahlungsmethoden',
+      'card-payment-label': 'Kartenzahlung Link (optional)',
+      'sepa-pay-label': 'SEPA Zahlungs-Link (optional)',
+      'logo-title': 'Logo',
       'logo-upload-text': 'Optional: PNG/SVG hochladen. Platzhalter wird sonst verwendet.',
       'from-section-title': 'Absender',
       'to-section-title': 'Empfänger',
@@ -522,30 +579,32 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     en: {
       'invoice-title': 'Invoice',
-      'invoice-details-title': '📋 Invoice Details',
+      'invoice-details-title': 'Invoice Details',
       'invoice-number-label': 'Invoice Number',
       'invoice-date-label': 'Date',
       'invoice-terms-label': 'Payment Terms',
       'invoice-currency-label': 'Currency',
-      'from-title': '🏢 From (Your Company)',
+      'from-title': 'From (Your Company)',
       'company-name-label': 'Company Name',
       'address-label': 'Address',
       'tax-id-label': 'EIN',
       'email-label': 'Email',
       'phone-label': 'Phone',
-      'to-title': '👤 To (Customer)',
+      'to-title': 'To (Customer)',
       'customer-name-label': 'Customer Name',
       'customer-address-label': 'Address',
       'customer-id-label': 'Customer ID',
-      'line-items-title': '📦 Line Items',
+      'line-items-title': 'Line Items',
       'add-item-text': 'Add Item',
+      'desc-placeholder': 'Description',
+      'subtitle-placeholder': 'Subtitle (optional)',
       'notes-label': 'Notes',
-      'legal-notices-title': '⚖️ Legal Notices',
+      'legal-notices-title': 'Legal Notices',
       'reverse-charge-text': 'Note: UStG §13b applies – VAT is to be paid by the service recipient (reverse charge procedure).',
-      'payment-methods-title': '💳 Payment Methods',
-      'card-payment-label': '💳 Card Payment Link (optional)',
-      'sepa-pay-label': '🏦 SEPA Payment Link (optional)',
-      'logo-title': '🎨 Logo',
+      'payment-methods-title': 'Payment Methods',
+      'card-payment-label': 'Card Payment Link (optional)',
+      'sepa-pay-label': 'SEPA Payment Link (optional)',
+      'logo-title': 'Logo',
       'logo-upload-text': 'Optional: Upload PNG/SVG. Placeholder will be used otherwise.',
       'from-section-title': 'From',
       'to-section-title': 'To',
